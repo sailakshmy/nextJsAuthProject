@@ -64,3 +64,20 @@ export async function verifyAuthSession() {
 
   return result;
 }
+
+export async function destroySession() {
+  const { session } = await verifyAuthSession();
+  if (!session) {
+    return {
+      error: "Unauthorized!!!",
+    };
+  }
+
+  await lucia.invalidateSession(session.id);
+  const sessionCookieForInvalidSession = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookieForInvalidSession.name,
+    sessionCookieForInvalidSession.value,
+    sessionCookieForInvalidSession.attributes
+  );
+}
